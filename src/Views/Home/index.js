@@ -19,7 +19,7 @@ const Home = (props) => {
       .get("https://jsonplaceholder.typicode.com/users")
       .then((res) => {
         setLoadingFlag(false);
-        console.log('this is the response from get',res)
+        console.log("this is response", res);
         setUsers(res.data);
       })
       .catch((err) => console.log(err));
@@ -47,7 +47,7 @@ const Home = (props) => {
           bs: "harness real-time e-markets",
         },
       })
-      .then((res) => console.log(res))
+      .then((res) => console.log("this is response from post", res))
       .catch((err) => console.log(err));
     let differ = allUsers.length - oldUsers.length;
     setDifference(differ);
