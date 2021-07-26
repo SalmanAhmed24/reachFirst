@@ -10,6 +10,8 @@ const TableComponent = (props) => {
   const [addToggle, setAddToggle] = useState(false);
   const [users, setUsers] = useState(AllUsers);
   const [searchValue, setSearchValue] = useState("");
+  const [editToggle, setEditToggle] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
   // useEffect
   useEffect(() => {
     setUsers(AllUsers);
@@ -18,8 +20,16 @@ const TableComponent = (props) => {
   const formModalToggle = () => {
     setAddToggle(!addToggle);
   };
+  const editModalToggle = () => {
+    console.log("called", editToggle);
+    setEditToggle(!editToggle);
+  };
   const onSearchHandler = (e) => {
     setSearchValue(e.target.value);
+  };
+  const editHandler = (item) => {
+    editModalToggle();
+    setCurrentItem(item);
   };
   const search = () => {
     let filteredUser = AllUsers.filter(
@@ -78,7 +88,12 @@ const TableComponent = (props) => {
                     <td>{item.experience}</td>
                     <td>{item.education}</td>
                     <td>
-                      <span className="edit-btn">Edit</span>
+                      <span
+                        className="edit-btn"
+                        onClick={() => editHandler(item)}
+                      >
+                        Edit
+                      </span>
                       <span className="del-btn">Delete</span>
                     </td>
                   </tr>
@@ -93,6 +108,14 @@ const TableComponent = (props) => {
       )}
       {addToggle ? (
         <FormModal formModalToggle={formModalToggle} toggleFlag={addToggle} />
+      ) : null}
+      {editToggle ? (
+        <FormModal
+          currentItem={currentItem}
+          editFlag={true}
+          editModalToggle={editModalToggle}
+          toggleFlag={editToggle}
+        />
       ) : null}
     </div>
   );

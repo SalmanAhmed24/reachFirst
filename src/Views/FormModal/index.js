@@ -6,6 +6,7 @@ import {
   skillsOpt,
   careerLevelOpt,
   genderOpt,
+  hourlyOpt,
   daysOpt,
 } from "../../Utils/constants";
 import Select from "react-select";
@@ -21,7 +22,15 @@ import { connect } from "react-redux";
 import { addUsers } from "../../store/actions/users";
 const FormModal = (props) => {
   // props destructure
-  const { toggleFlag, formModalToggle, addUsers } = props;
+  const {
+    toggleFlag,
+    formModalToggle,
+    addUsers,
+    editFlag,
+    currentItem,
+    editModalToggle,
+    users,
+  } = props;
   // state definitions
   const [step1, setStep1] = useState(true);
   const [step2, setStep2] = useState(false);
@@ -63,6 +72,110 @@ const FormModal = (props) => {
   const [wedTimeFlag, setWedTimeFlag] = useState(false);
   const [thuTimeFlag, setThuTimeFlag] = useState(false);
   const [friTimeFlag, setFriTimeFlag] = useState(false);
+  //
+  useEffect(() => {
+    if (editFlag) {
+      setJobValue(
+        editFlag
+          ? currentItem.jobTitle == null
+            ? null
+            : jobOpt.find((item) => item.label == currentItem.jobTitle)
+          : null
+      );
+      setJobExpValue(
+        editFlag
+          ? currentItem.experience == null
+            ? null
+            : jobExp.find((item) => item.value == currentItem.experience)
+          : null
+      );
+      setJobEduValue(
+        editFlag
+          ? currentItem.education == null
+            ? null
+            : educationOpt.find((item) => item.label == currentItem.education)
+          : null
+      );
+      const newSkills = [];
+      for (const i of currentItem.skills) {
+        newSkills.push(skillsOpt.find((item) => item.label == i));
+      }
+      setSkillsValue(newSkills);
+      setDescValue(currentItem.description);
+      setHourlyRateValue(
+        currentItem.hourlyRate ? currentItem.hourlyRate : null
+      );
+      setStartDateValue(currentItem.startDate ? currentItem.startDate : null);
+      setCareerLevelValue(
+        currentItem.careerLevel
+          ? careerLevelOpt.find((item) => item.label == currentItem.careerLevel)
+          : null
+      );
+      setGenderValue(
+        currentItem.gender
+          ? genderOpt.find((item) => item.label == currentItem.gender)
+          : null
+      );
+      setEquipSpecsValue(
+        currentItem.equipmentSpecs ? currentItem.equipmentSpecs : null
+      );
+      setDaysValue(currentItem.days !== null ? currentItem.days : null);
+      const monSchFilter = currentItem.scheduledDays.find(
+        (item) => item.monday == true
+      );
+      const tueSchFilter = currentItem.scheduledDays.find(
+        (item) => item.tuesday == true
+      );
+      const wdSchFilter = currentItem.scheduledDays.find(
+        (item) => item.wednsday == true
+      );
+      const thuSchFilter = currentItem.scheduledDays.find(
+        (item) => item.thursday == true
+      );
+      const friSchFilter = currentItem.scheduledDays.find(
+        (item) => item.friday == true
+      );
+
+      setMonStartValue(
+        monSchFilter && monSchFilter !== undefined
+          ? monSchFilter.startTime
+          : null
+      );
+      setMonEndValue(
+        monSchFilter && monSchFilter !== undefined ? monSchFilter.endTime : null
+      );
+      setTueStartValue(
+        tueSchFilter && tueSchFilter !== undefined
+          ? tueSchFilter.startTime
+          : null
+      );
+      setTueEndValue(
+        tueSchFilter && tueSchFilter !== undefined ? tueSchFilter.endTime : null
+      );
+      setWedStartValue(
+        wdSchFilter && wdSchFilter !== undefined ? wdSchFilter.startTime : null
+      );
+      setWedEndValue(
+        wdSchFilter && wdSchFilter !== undefined ? wdSchFilter.endTime : null
+      );
+      setThuStartValue(
+        thuSchFilter && thuSchFilter !== undefined
+          ? thuSchFilter.startTime
+          : null
+      );
+      setThuEndValue(
+        thuSchFilter && thuSchFilter !== undefined ? thuSchFilter.endTime : null
+      );
+      setFriStartValue(
+        friSchFilter && friSchFilter !== undefined
+          ? friSchFilter.startTime
+          : null
+      );
+      setFriEndValue(
+        friSchFilter && friSchFilter !== undefined ? friSchFilter.endTime : null
+      );
+    }
+  }, []);
 
   // functions
   const onJobSelectHandler = (value) => {
@@ -159,43 +272,108 @@ const FormModal = (props) => {
             jobTitle: jobValue && jobValue.label,
             experience: jobExpValue && jobExpValue.value,
             education: jobEduValue && jobEduValue.label,
-            skills: skillsValue && skillsValue,
+            skills: skillsValue && skillsValue.map((item) => item.label),
             description: descValue,
             hourlyRate: hourlyRateValue,
             startDate: startDateValue && startDateValue,
             careerLevel: careerLevelValue && careerLevelValue.label,
             gender: genderValue && genderValue.label,
             equipmentSpecs: equipSpecsValue,
+            days: daysValue,
             scheduledDays: [
               {
                 monday: daysValue.includes("monday") ? true : false,
-                startTime: monStartValue,
-                endTime: monEndValue,
+                startTime: daysValue.includes("monday") ? monStartValue : null,
+                endTime: daysValue.includes("monday") ? monEndValue : null,
               },
               {
                 tuesday: daysValue.includes("tuesday") ? true : false,
-                startTime: tueStartValue,
-                endTime: tueEndValue,
+                startTime: daysValue.includes("tuesday") ? tueStartValue : null,
+                endTime: daysValue.includes("tuesday") ? tueEndValue : null,
               },
               {
                 wednsday: daysValue.includes("wednsday") ? true : false,
-                startTime: wedStartValue,
-                endTime: wedEndValue,
+                startTime: daysValue.includes("wednsday")
+                  ? wedStartValue
+                  : null,
+                endTime: daysValue.includes("wednsday") ? wedEndValue : null,
               },
               {
                 thursday: daysValue.includes("thursday") ? true : false,
-                startTime: thuStartValue,
-                endTime: thuEndValue,
+                startTime: daysValue.includes("thursday")
+                  ? thuStartValue
+                  : null,
+                endTime: daysValue.includes("thursday") ? thuEndValue : null,
               },
               {
                 friday: daysValue.includes("friday") ? true : false,
-                startTime: friStartValue,
-                endTime: friEndValue,
+                startTime: daysValue.includes("friday") ? friStartValue : null,
+                endTime: daysValue.includes("friday") ? friEndValue : null,
               },
             ],
           };
-          addUsers(data);
-          formModalToggle();
+          if (editFlag) {
+            users.map((item) => {
+              if (item.id == currentItem.id) {
+                item.jobTitle = jobValue && jobValue.label;
+                item.experience = jobExpValue && jobExpValue.value;
+                item.education = jobEduValue && jobEduValue.label;
+                item.skills = skillsValue && skillsValue;
+                item.description = descValue;
+                item.hourlyRate = hourlyRateValue;
+                item.startDate = startDateValue && startDateValue;
+                item.careerLevel = careerLevelValue && careerLevelValue.label;
+                item.gender = genderValue && genderValue.label;
+                item.equipmentSpecs = equipSpecsValue;
+                item.days = daysValue;
+                item.scheduledDays = [
+                  {
+                    monday: daysValue.includes("monday") ? true : false,
+                    startTime: daysValue.includes("monday")
+                      ? monStartValue
+                      : null,
+                    endTime: daysValue.includes("monday") ? monEndValue : null,
+                  },
+                  {
+                    tuesday: daysValue.includes("tuesday") ? true : false,
+                    startTime: daysValue.includes("tuesday")
+                      ? tueStartValue
+                      : null,
+                    endTime: daysValue.includes("tuesday") ? tueEndValue : null,
+                  },
+                  {
+                    wednsday: daysValue.includes("wednsday") ? true : false,
+                    startTime: daysValue.includes("wednsday")
+                      ? wedStartValue
+                      : null,
+                    endTime: daysValue.includes("wednsday")
+                      ? wedEndValue
+                      : null,
+                  },
+                  {
+                    thursday: daysValue.includes("thursday") ? true : false,
+                    startTime: daysValue.includes("thursday")
+                      ? thuStartValue
+                      : null,
+                    endTime: daysValue.includes("thursday")
+                      ? thuEndValue
+                      : null,
+                  },
+                  {
+                    friday: daysValue.includes("friday") ? true : false,
+                    startTime: daysValue.includes("friday")
+                      ? friStartValue
+                      : null,
+                    endTime: daysValue.includes("friday") ? friEndValue : null,
+                  },
+                ];
+              }
+            });
+            editModalToggle();
+          } else {
+            addUsers(data);
+            formModalToggle();
+          }
         }
       }
     }
@@ -288,12 +466,21 @@ const FormModal = (props) => {
           <h4>Create a job post</h4>
           <p>Complete the following steps</p>
         </div>
-        <i
-          className="far fa-times-circle"
-          onClick={() => {
-            formModalToggle();
-          }}
-        ></i>
+        {editFlag ? (
+          <i
+            className="far fa-times-circle"
+            onClick={() => {
+              editModalToggle();
+            }}
+          ></i>
+        ) : (
+          <i
+            className="far fa-times-circle"
+            onClick={() => {
+              formModalToggle();
+            }}
+          ></i>
+        )}
       </div>
       <hr />
       <div className="steps-indicator-wrap">
@@ -402,7 +589,7 @@ const FormModal = (props) => {
               className="form-control"
               value={hourlyRateValue}
               type="number"
-              max={11}
+              max={1000}
               min={-1}
               onChange={(value) => onHourlyRateHandler(value)}
             />
@@ -685,13 +872,16 @@ const FormModal = (props) => {
           </button>
         ) : null}
         <button className="next-btn" onClick={() => nextFormHandler()}>
-          {submitFlag ? "Submit" : "Next"}
+          {submitFlag ? (editFlag ? "Edit" : "Submit") : "Next"}
         </button>
       </div>
     </ReactModal>
   );
 };
+const mapStateToProps = (state) => ({
+  users: state.users.allUsers,
+});
 const mapStateToDispatch = (dispatch) => ({
   addUsers: (user) => dispatch(addUsers(user)),
 });
-export default connect(null, mapStateToDispatch)(FormModal);
+export default connect(mapStateToProps, mapStateToDispatch)(FormModal);
